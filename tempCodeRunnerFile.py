@@ -1,6 +1,2 @@
-le done:
-            sys.stdout.write(i)
-            sys.stdout.flush()
-            i+
-            
-            
+)
+    # Stratergy.strategy(0)

@@ -1,5 +1,4 @@
 from tradingview_ta import TA_Handler
-import tradingview_ta
 from pandas import read_csv as pd
 import pandas as pd
 import json as j
@@ -68,18 +67,21 @@ class screener:
     def get_data_indicators(loadprocess,index='NSE.all'):
         data = screener.getquotes(index=index)
         data = j.loads(data)
-        stockfoundcount = 0
-        interval = ["5m","15m","30m","1h","2h","4h","1d","1W","1M"]
+    
+        interval = ["1d","1W","1M"]
+        interval = ["1M"]
         for k in interval:
-            stockfound = []
-            stockfoundcount1 = 0
             for i in data:
                 try:
                     stockinfo = screener.get_data(symbol=data[i],interval=k).get_analysis().indicators
-                    stockfoundcount1+=1
-                    sys.stdout.write(str(stockfoundcount1)+"\r")
-                    sys.stdout.flush()
-                    screener.tofiles(stockinfo,data[i],interval=k)
+                    # stockfoundcount1+=1
+                    # sys.stdout.write(str(stockfoundcount1)+"\r")
+                    # sys.stdout.flush()
+                    if stockinfo["RSI"]<50:
+                        pass
+                    print(data[i])
+                    
+                    # screener.tofiles(stockinfo,data[i],interval=k)
                     # if (stockinfo["MACD.macd"] == stockinfo["MACD.signal"]) or (stockinfo["MACD.macd"] >= (stockinfo["MACD.signal"]+0.05)):
                     # if (stockinfo["RSI"] >= 58.5 and stockinfo["RSI"] < 63) and stockinfo["close"]<stockinfo["Pivot.M.Fibonacci.R2"]:
                     # # if stockinfo['high']>stockinfo["Pivot.M.Fibonacci.R1"] and stockinfo['high']<stockinfo["Pivot.M.Fibonacci.R2"] and stockinfo['RSI']>50:
@@ -92,20 +94,18 @@ class screener:
                     
                 except:
                     continue
-            print("Stocks Found",stockfound,"at ",k," interval ")
-        # loadprocess.kill()
     def tofiles(stockinfo,quote,interval):
-        path = "/Users/aryagirigoudar/Documents/Python /StockScreenerFREE/dump/nifty50/"+str(interval)+"/"+str(quote)+".csv"
+        path = "/Users/aryagirigoudar/Documents/Python /StockScreenerFREE/dump/NSEAll/"+str(interval)+"/"+str(quote)+".csv"
         file = open(path,"w+")
         for i in stockinfo:
             file.write(str(i)+",")
         file.close()
 
-        # file = open(path,"a")
-        # file.write("\n")
-        # for i in stockinfo:
-        #     file.write(str(stockinfo[i])+",")
-        # file.close()
+        file = open(path,"a")
+        file.write("\n")
+        for i in stockinfo:
+            file.write(str(stockinfo[i])+",")
+        file.close()
             
     def droplast():
         df = pd.read_csv("./dump/BAJAJFINSV.csv")
@@ -116,21 +116,20 @@ class screener:
         delay = 0.1
        
         while True:
-            continue
+            
 
-            # sys.stdout.write('-\r')
-            # # sys.stdout.write(str(stockCount))
-            # time.sleep(delay)
-            # sys.stdout.flush()
-            # sys.stdout.write('\\ \r')
-            # time.sleep(delay)
-            # sys.stdout.flush()
-            # sys.stdout.write('|\r')
-            # time.sleep(delay)
-            # sys.stdout.flush()
-            # time.sleep(delay)
-            # sys.stdout.write('/\r')   
-
+            sys.stdout.write('-\r')
+            # sys.stdout.write(str(stockCount))
+            time.sleep(delay)
+            sys.stdout.flush()
+            sys.stdout.write('\\ \r')
+            time.sleep(delay)
+            sys.stdout.flush()
+            sys.stdout.write('|\r')
+            time.sleep(delay)
+            sys.stdout.flush()
+            time.sleep(delay)
+            sys.stdout.write('/\r')  
 
 class Stratergy:
     def strategy(stockinfo):
@@ -154,33 +153,16 @@ class Stratergy:
             print("Cant Insert")
         
             
-    def deletestrategy():
-        pass
-    def addstrategy():
-        final = dict()
-        file = open("strategy.strat","a")
-        n = int(input("how many indicator"))
-        for i in range(0,n):
-            stra = screener.addindicator()
-            final[i] = stra
-        jsonload = j.dumps(final,indent=3)
-        file.writelines('\n'+str(jsonload))
-        file.close()
+   
 
 
 
-    def ExtractOperator(string):
-        operators = ['>', '<', '<=', '>=', '+', '-', '*', '/', '%', '**', '//', '=', '+=', '-=', '==', '*=', '/=', '%=', '//=', '!=', '&=', '|=', '^=', '>>=', '<<=']
-        r = re.compile( '|'.join( '(?:{})'.format(re.escape(o)) for o in sorted(operators, reverse=True, key=len)) )
-
-        for pattern in string:
-            if pattern in operators:
-                return str(pattern)
+   
 if __name__ == "__main__":   
     # screener.Extract_data(filename="data.csv",storefilename="NSE.nifty50")
-    # loadprocess = mp.Process(target=screener.load, )
-    # loadprocess.start()
-    coreprocess = mp.Process(target=screener.get_data_indicators(loadprocess=0,index="NSE.nifty50"), )
+    loadprocess = mp.Process(target=screener.load, )
+    loadprocess.start()
+    coreprocess = mp.Process(target=screener.get_data_indicators(loadprocess=0,index="NSE.all"), )
     coreprocess.start()
     
     # print(tradingview_ta.__file__)
